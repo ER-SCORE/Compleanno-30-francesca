@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#120d10">
+<title>Invito di Francesca — 30 anni</title>
+<style>
+
+  /* ============================================================
+     TOKEN DI DESIGN — palette scura con oro/champagne
+     ============================================================ */
+  :root{
+    --bg:            #120d10;
+    --bg-soft:       #1c1519;
+    --line:          rgba(201,161,90,0.25);
+
+    --gold-deep:     #8a6a34;
+    --gold:          #c9a15a;
+    --gold-light:    #ecdcb2;
+
+    --ink:           #f4ecdd;
+    --ink-dim:       #a99a89;
+
+    --serif: 'Big Caslon', 'Didot', 'Bodoni MT', Georgia, 'Times New Roman', serif;
+    --sans:  -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+
+    --ease: cubic-bezier(.22,.68,0,1);
+  }
+
+  /* ============================================================
+     RESET DI BASE
+     ============================================================ */
+  *{ box-sizing:border-box; }
+  html,body{
+    margin:0; padding:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--sans);
+    -webkit-tap-highlight-color:transparent;
+  }
+  h1,h2,p{ margin:0; }
+  button{ font-family:inherit; border:none; background:none; cursor:pointer; }
+
+  /* leggero effetto vignettatura di sfondo, per profondità senza foto */
+  body{
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(201,161,90,0.08), transparent 60%),
+      radial-gradient(ellipse at 50% 100%, rgba(201,161,90,0.05), transparent 55%),
+      var(--bg);
+  }
+
+  .gold-text{ color:var(--gold); }
+  @supports (background-clip:text) or (-webkit-background-clip:text){
+    .gold-text{
+      background:linear-gradient(135deg,var(--gold-deep),var(--gold) 45%,var(--gold-light) 60%,var(--gold) 80%,var(--gold-deep));
+      -webkit-background-clip:text;
+      background-clip:text;
+      color:transparent;
+    }
+  }
+
+  /* ============================================================
+     SCHERMATA 1 — COPERTINA
+     ============================================================ */
+  #cover{
+    min-height:100svh; min-height:100vh;
+    width:100%;
+    display:flex; align-items:center; justify-content:center;
+    padding:8vh 8vw;
+    transition:opacity .5s var(--ease), transform .5s var(--ease);
+  }
+  #cover.is-closing{ opacity:0; transform:scale(0.98); pointer-events:none; }
+  #cover.is-hidden{ display:none; }
+
+  .cover-inner{ text-align:center; width:100%; max-width:420px; }
+
+  .cover-name{
+    font-family:var(--serif);
+    font-weight:400;
+    font-size:clamp(1.7rem, 8vw, 2.3rem);
+    letter-spacing:.06em;
+    color:var(--ink);
+    opacity:0; transform:translateY(14px);
+    animation:reveal-up .9s var(--ease) forwards;
+    animation-delay:.15s;
+  }
+
+  .cover-age{
+    font-family:var(--serif);
+    font-weight:400;
+    font-size:clamp(6rem, 34vw, 9.5rem);
+    line-height:.95;
+    margin:.1em 0;
+    background-size:220% 220%;
+    animation:
+      reveal-up .9s var(--ease) forwards,
+      shimmer 7s ease-in-out infinite;
+    animation-delay:.4s, 1.4s;
+    opacity:0; transform:translateY(14px);
+  }
+
+  .cover-date{
+    font-size:.95rem;
+    letter-spacing:.24em;
+    color:var(--ink-dim);
+    opacity:0; transform:translateY(14px);
+    animation:reveal-up .9s var(--ease) forwards;
+    animation-delay:.65s;
+  }
+
+  .btn-open{
+    margin-top:3.2em;
+    padding:.95em 2em;
+    border:1px solid var(--gold);
+    color:var(--gold-light);
+    font-size:.78rem;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+    border-radius:999px;
+    transition:background .35s var(--ease), color .35s var(--ease), box-shadow .35s var(--ease);
+    opacity:0; transform:translateY(14px);
+    animation:reveal-up .9s var(--ease) forwards;
+    animation-delay:.95s;
+  }
+  .btn-open:active{
+    background:var(--gold);
+    color:var(--bg);
+    box-shadow:0 0 24px rgba(201,161,90,0.35);
+  }
+  @media (hover:hover){
+    .btn-open:hover{
+      background:var(--gold);
+      color:var(--bg);
+      box-shadow:0 0 24px rgba(201,161,90,0.35);
+    }
+  }
+
+  @keyframes reveal-up{
+    to{ opacity:1; transform:translateY(0); }
+  }
+  @keyframes shimmer{
+    0%,100%{ background-position:0% 50%; }
+    50%{ background-position:100% 50%; }
+  }
+
+  /* ============================================================
+     SCHERMATA 2 — INVITO (contenuto a scorrimento)
+     ============================================================ */
+  #invite{
+    display:none;
+    min-height:100vh;
+    padding:10vh 8vw 10vh;
+    max-width:460px;
+    margin:0 auto;
+    opacity:0;
+    transition:opacity .5s var(--ease);
+  }
+  #invite.is-active{ display:block; }
+  #invite.is-visible{ opacity:1; }
+
+  .block{ text-align:center; padding:2.6em 0; }
+
+  .fade-section{
+    opacity:0; transform:translateY(18px);
+    transition:opacity .8s var(--ease), transform .8s var(--ease);
+  }
+  .fade-section.is-visible{ opacity:1; transform:translateY(0); }
+
+  /* divisorio ornamentale */
+  .divider{
+    display:flex; align-items:center; justify-content:center; gap:.9em;
+    padding:0;
+  }
+  .divider::before,
+  .divider::after{
+    content:'';
+    height:1px; width:52px;
+    background:linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+  .diamond{
+    width:6px; height:6px;
+    background:var(--gold);
+    transform:rotate(45deg);
+    flex-shrink:0;
+  }
+
+  .quote-text{
+    font-family:var(--serif);
+    font-size:clamp(1.25rem, 5.5vw, 1.55rem);
+    line-height:1.5;
+    color:var(--ink);
+  }
+
+  .details-datetime{
+    font-size:.85rem;
+    letter-spacing:.14em;
+    color:var(--ink-dim);
+    margin-bottom:.9em;
+  }
+  .details-event{
+    font-family:var(--serif);
+    font-size:clamp(1.6rem, 7vw, 2rem);
+    letter-spacing:.03em;
+    margin-bottom:.6em;
+  }
+  .details-location{
+    font-size:.95rem;
+    letter-spacing:.08em;
+  }
+  .maps-link-wrap{ margin-top:.7em; min-height:1.1em; }
+  .maps-link{
+    display:inline-block;
+    font-size:.78rem;
+    letter-spacing:.08em;
+    color:var(--gold-light);
+    text-decoration:none;
+    border-bottom:1px solid var(--gold-deep);
+    padding-bottom:.15em;
+    transition:color .3s var(--ease), border-color .3s var(--ease);
+  }
+  .maps-link:hover,
+  .maps-link:active{ border-color:var(--gold-light); }
+
+  .secret-text{
+    font-family:var(--serif);
+    font-style:italic;
+    font-size:1.05rem;
+    color:var(--ink);
+    line-height:1.55;
+  }
+  .secret-caption{
+    margin-top:.9em;
+    font-size:.85rem;
+    color:var(--ink-dim);
+  }
+
+  .countdown-label{
+    font-size:.78rem;
+    letter-spacing:.22em;
+    color:var(--ink-dim);
+    margin-bottom:1.4em;
+  }
+  .countdown-grid{
+    display:flex; justify-content:center; gap:clamp(.6rem,4vw,1.2rem);
+  }
+  .countdown-unit{
+    display:flex; flex-direction:column; align-items:center;
+    min-width:56px;
+  }
+  .countdown-number{
+    font-family:var(--serif);
+    font-size:clamp(1.7rem, 8vw, 2.2rem);
+    font-variant-numeric:tabular-nums;
+    line-height:1;
+  }
+  .countdown-caption{
+    margin-top:.5em;
+    font-size:.65rem;
+    letter-spacing:.14em;
+    color:var(--ink-dim);
+  }
+
+  .dedica-text{
+    font-family:var(--serif);
+    font-size:clamp(1.05rem, 4.6vw, 1.25rem);
+    line-height:1.65;
+    color:var(--ink);
+  }
+
+  .closing-text{
+    font-family:var(--serif);
+    font-size:clamp(1.3rem, 5.8vw, 1.6rem);
+    line-height:1.6;
+    color:var(--ink);
+  }
+  .closing-text .small-line{
+    display:block;
+    font-size:.62em;
+    letter-spacing:.06em;
+    color:var(--ink-dim);
+    margin-top:.5em;
+  }
+
+  .cta-block{ padding-top:1.2em; }
+  .btn-calendar{
+    padding:1em 2.1em;
+    border:1px solid var(--gold);
+    color:var(--gold-light);
+    font-size:.75rem;
+    letter-spacing:.2em;
+    text-transform:uppercase;
+    border-radius:999px;
+    transition:background .35s var(--ease), color .35s var(--ease), box-shadow .35s var(--ease);
+  }
+  .btn-calendar:active{
+    background:var(--gold);
+    color:var(--bg);
+    box-shadow:0 0 24px rgba(201,161,90,0.3);
+  }
+  @media (hover:hover){
+    .btn-calendar:hover{
+      background:var(--gold);
+      color:var(--bg);
+      box-shadow:0 0 24px rgba(201,161,90,0.3);
+    }
+  }
+  .cta-hint{
+    margin-top:1em;
+    font-size:.78rem;
+    color:var(--ink-dim);
+    min-height:1.2em;
+  }
+
+  /* ---- RSVP ---- */
+  .rsvp-label{
+    font-size:.78rem;
+    letter-spacing:.22em;
+    color:var(--ink-dim);
+    margin-bottom:1.4em;
+  }
+  .rsvp-name-input{
+    display:block;
+    width:100%;
+    max-width:280px;
+    margin:0 auto 1.4em;
+    padding:.85em .5em;
+    background:transparent;
+    border:none;
+    border-bottom:1px solid var(--line);
+    color:var(--ink);
+    font-family:var(--serif);
+    font-size:1rem;
+    text-align:center;
+    transition:border-color .3s var(--ease);
+  }
+  .rsvp-name-input::placeholder{ color:var(--ink-dim); }
+  .rsvp-name-input:focus{ outline:none; border-color:var(--gold); }
+
+  .rsvp-buttons{
+    display:flex; justify-content:center; gap:1em; flex-wrap:wrap;
+  }
+  .rsvp-btn{
+    padding:.9em 1.6em;
+    border:1px solid var(--gold);
+    color:var(--gold-light);
+    font-size:.75rem;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    border-radius:999px;
+    transition:background .35s var(--ease), color .35s var(--ease), box-shadow .35s var(--ease), opacity .3s var(--ease);
+  }
+  .rsvp-btn.is-selected{
+    background:var(--gold);
+    color:var(--bg);
+    box-shadow:0 0 24px rgba(201,161,90,0.3);
+  }
+  .rsvp-btn:disabled{ opacity:.4; pointer-events:none; }
+  @media (hover:hover){
+    .rsvp-btn:not(:disabled):hover{ background:var(--gold); color:var(--bg); }
+  }
+
+  .rsvp-hint{
+    margin-top:1.1em;
+    font-size:.85rem;
+    color:var(--ink-dim);
+    min-height:1.2em;
+  }
+  .rsvp-followup{ margin-top:1.2em; }
+  .whatsapp-btn{
+    display:inline-block;
+    padding:.9em 1.8em;
+    border:1px solid var(--gold);
+    color:var(--gold-light);
+    font-size:.72rem;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    text-decoration:none;
+    border-radius:999px;
+    transition:background .35s var(--ease), color .35s var(--ease);
+  }
+  @media (hover:hover){
+    .whatsapp-btn:hover{ background:var(--gold); color:var(--bg); }
+  }
+
+  /* ============================================================
+     ACCESSIBILITÀ / MOTION
+     ============================================================ */
+  :focus-visible{
+    outline:1px solid var(--gold-light);
+    outline-offset:3px;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{
+      animation-duration:.01ms !important;
+      animation-iteration-count:1 !important;
+      transition-duration:.01ms !important;
+    }
+    .fade-section{ opacity:1; transform:none; }
+  }
+
+  /* schermi molto piccoli */
+  @media (max-width:340px){
+    .countdown-grid{ gap:.5rem; }
+    .countdown-unit{ min-width:48px; }
+  }
+
+</style>
+</head>
+<body>
+
+  <!-- ============================================================
+       SCHERMATA 1 — COPERTINA
+       ============================================================ -->
+  <section id="cover" aria-label="Copertina invito">
+    <div class="cover-inner">
+      <h1 class="cover-name">Francesca</h1>
+      <p class="cover-age gold-text">30</p>
+      <p class="cover-date">18.09.2026</p>
+      <button id="open-invite" class="btn-open" type="button">Apri il tuo invito</button>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SCHERMATA 2 — INVITO
+       ============================================================ -->
+  <section id="invite" aria-label="Dettagli invito">
+
+    <article class="block fade-section">
+      <p class="quote-text">30 anni meritano qualcosa di più di un semplice “Buon compleanno”.</p>
+    </article>
+
+    <div class="divider fade-section"><span class="diamond"></span></div>
+
+    <article class="block fade-section">
+      <p class="details-datetime" id="details-datetime">18 settembre 2026 · ore 20:00</p>
+      <p class="details-event">Apericena</p>
+      <p class="details-location" id="details-location">Location: <span class="gold-text">TOP SECRET</span></p>
+      <p class="maps-link-wrap" id="maps-link-wrap"></p>
+    </article>
+
+    <article class="block fade-section">
+      <p class="secret-text" id="secret-text">Dove? Questo dettaglio è ancora classificato.</p>
+      <p class="secret-caption">Ma tranquilla: il countdown qui sotto non mente.</p>
+    </article>
+
+    <div class="divider fade-section"><span class="diamond"></span></div>
+
+    <article class="block fade-section">
+      <p class="countdown-label" id="countdown-label">Manca ancora</p>
+      <div class="countdown-grid" aria-live="polite">
+        <div class="countdown-unit">
+          <span class="countdown-number gold-text" id="cd-days">00</span>
+          <span class="countdown-caption">giorni</span>
+        </div>
+        <div class="countdown-unit">
+          <span class="countdown-number gold-text" id="cd-hours">00</span>
+          <span class="countdown-caption">ore</span>
+        </div>
+        <div class="countdown-unit">
+          <span class="countdown-number gold-text" id="cd-minutes">00</span>
+          <span class="countdown-caption">minuti</span>
+        </div>
+        <div class="countdown-unit">
+          <span class="countdown-number gold-text" id="cd-seconds">00</span>
+          <span class="countdown-caption">secondi</span>
+        </div>
+      </div>
+    </article>
+
+    <div class="divider fade-section"><span class="diamond"></span></div>
+
+    <article class="block fade-section">
+      <p class="dedica-text">Trent'anni non sono un'età: sono una versione di te che aspettavamo da tempo. Stasera si festeggia esattamente questo.</p>
+    </article>
+
+    <article class="block fade-section">
+      <p class="closing-text">Preparati.<span class="small-line">Il resto lo scoprirai il 18 settembre.</span></p>
+    </article>
+
+    <div class="block cta-block fade-section">
+      <button id="add-calendar" class="btn-calendar" type="button">Aggiungi al calendario</button>
+      <p class="cta-hint" id="calendar-hint" role="status"></p>
+    </div>
+
+    <div class="divider fade-section"><span class="diamond"></span></div>
+
+    <div class="block rsvp-block fade-section">
+      <p class="rsvp-label">Confermi la tua presenza?</p>
+      <input type="text" id="rsvp-name" class="rsvp-name-input" placeholder="Il tuo nome" autocomplete="name">
+      <div class="rsvp-buttons">
+        <button id="rsvp-yes" class="rsvp-btn" type="button">Ci sarò</button>
+        <button id="rsvp-no" class="rsvp-btn" type="button">Non ci sarò</button>
+      </div>
+      <p class="rsvp-hint" id="rsvp-hint" role="status"></p>
+      <div class="rsvp-followup" id="rsvp-followup"></div>
+    </div>
+
+  </section>
+
+<script>
+(function(){
+  'use strict';
+
+  /* ============================================================
+     CONFIGURAZIONE — unica sezione da modificare
+     ============================================================
+     Per aggiornare la location: valorizza CONFIG.location.
+     Se lasciata vuota (""), il sito mostra automaticamente
+     il messaggio "TOP SECRET / classificato".
+     Se la valorizzi, il sito mostra subito la location reale
+     sia a schermo sia nel file .ics.
+
+     COME COLLEGARE IL GOOGLE FORM PER L'RSVP
+     1. Crea un Google Form con due campi a risposta breve:
+        "Nome" e "Risposta".
+     2. Apri il Form → menu "⋮" → "Ottieni link precompilato" →
+        compila con dati di prova → "Ottieni link".
+     3. Nel link ottenuto trovi due parametri tipo
+        "entry.123456789=..." e "entry.987654321=...":
+        copia i due "entry.XXXXXXXXX" in googleForm.entryName
+        e googleForm.entryResponse qui sotto.
+     4. Prendi l'URL del Form (quello con "viewform" in fondo),
+        sostituisci "viewform" con "formResponse" e incollalo
+        in googleForm.actionUrl.
+     5. Le risposte compariranno nella scheda "Risposte" del
+        Form (collegalo a un Google Sheet per vederle in elenco).
+     ============================================================ */
+  var CONFIG = {
+    name: "Francesca",
+    age: 30,
+    eventDateTimeDisplay: "18 settembre 2026 · ore 20:00",
+    eventType: "Apericena",
+    location: "Bar Levante, Litoranea di Levante 5/7 – Barletta", // <-- MODIFICA QUI
+    locationMapsUrl: "https://www.google.com/maps/search/?api=1&query=Bar+Levante+Barletta&query_place_id=ChIJf4S4JWEcOBMRPdFH2RjQZn4",
+    eventISODateTime: "2026-09-18T20:00:00+02:00", // ora italiana (CEST)
+    durationHours: 4,
+
+    // RSVP → Google Form (vedi istruzioni sopra)
+    googleForm: {
+      actionUrl: "https://docs.google.com/forms/d/e/1FAIpQLSeq-Ii9M_LBcCROO5gw7DRl7TrFSyEu5xmYG7PUL3yYVmarmg/formResponse",
+      entryName: "entry.85679007",
+      entryResponse: "entry.1897957087"
+    },
+
+    // Link di invito al gruppo WhatsApp, mostrato solo a chi conferma "Ci sarò"
+    whatsappGroupLink: "https://chat.whatsapp.com/LlyTmO9vWAxCVNxtg3JyEn?s=cl&p=a&mlu=4&ilr=4"  // <-- MODIFICA QUI quando lo avrai
+  };
+
+  document.addEventListener('DOMContentLoaded', init);
+
+  function init(){
+    populateContent();
+    setupOpenInvite();
+    setupScrollReveal();
+    startCountdown();
+    setupAddToCalendar();
+    setupRSVP();
+  }
+
+  /* ---------- contenuti dinamici (data/evento/location) ---------- */
+  function populateContent(){
+    var dtEl = document.getElementById('details-datetime');
+    dtEl.textContent = CONFIG.eventDateTimeDisplay;
+
+    var locEl = document.getElementById('details-location');
+    var secretEl = document.getElementById('secret-text');
+    var mapsWrap = document.getElementById('maps-link-wrap');
+
+    if (CONFIG.location && CONFIG.location.trim() !== '') {
+      locEl.innerHTML = 'Location: <span class="gold-text">' + escapeHtml(CONFIG.location) + '</span>';
+      secretEl.textContent = 'Missione compiuta: le coordinate sono appena state declassificate.';
+
+      if (CONFIG.locationMapsUrl && CONFIG.locationMapsUrl.trim() !== '') {
+        mapsWrap.innerHTML = '<a class="maps-link" href="' + escapeHtml(CONFIG.locationMapsUrl) + '" target="_blank" rel="noopener">Apri in Google Maps</a>';
+      }
+    } else {
+      locEl.innerHTML = 'Location: <span class="gold-text">TOP SECRET</span>';
+      secretEl.textContent = 'Dove? Questo dettaglio è ancora classificato.';
+    }
+  }
+
+  function escapeHtml(str){
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  /* ---------- apertura invito ---------- */
+  function setupOpenInvite(){
+    var btn = document.getElementById('open-invite');
+    var cover = document.getElementById('cover');
+    var invite = document.getElementById('invite');
+
+    btn.addEventListener('click', function(){
+      cover.classList.add('is-closing');
+      window.setTimeout(function(){
+        cover.classList.add('is-hidden');   // rimossa dal flusso: display:none
+        invite.classList.add('is-active');  // aggiunta al flusso: display:block
+        window.scrollTo(0, 0);
+        // piccolo ritardo per far partire la transizione di opacità sull'invito
+        window.requestAnimationFrame(function(){
+          invite.classList.add('is-visible');
+        });
+      }, 500);
+    });
+  }
+
+  /* ---------- reveal a scorrimento ---------- */
+  function setupScrollReveal(){
+    var sections = document.querySelectorAll('.fade-section');
+
+    if (!('IntersectionObserver' in window)) {
+      sections.forEach(function(el){ el.classList.add('is-visible'); });
+      return;
+    }
+
+    var observer = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.25 });
+
+    sections.forEach(function(el){ observer.observe(el); });
+  }
+
+  /* ---------- countdown ---------- */
+  function startCountdown(){
+    var target = new Date(CONFIG.eventISODateTime).getTime();
+
+    var daysEl = document.getElementById('cd-days');
+    var hoursEl = document.getElementById('cd-hours');
+    var minutesEl = document.getElementById('cd-minutes');
+    var secondsEl = document.getElementById('cd-seconds');
+    var labelEl = document.getElementById('countdown-label');
+
+    var timer = null;
+
+    function pad(n){ return String(n).padStart(2, '0'); }
+
+    function tick(){
+      var diff = target - Date.now();
+
+      if (diff <= 0) {
+        daysEl.textContent = '00';
+        hoursEl.textContent = '00';
+        minutesEl.textContent = '00';
+        secondsEl.textContent = '00';
+        labelEl.textContent = 'È arrivato il grande giorno';
+        if (timer) clearInterval(timer);
+        return;
+      }
+
+      var d = Math.floor(diff / 86400000); diff -= d * 86400000;
+      var h = Math.floor(diff / 3600000);  diff -= h * 3600000;
+      var m = Math.floor(diff / 60000);    diff -= m * 60000;
+      var s = Math.floor(diff / 1000);
+
+      daysEl.textContent = pad(d);
+      hoursEl.textContent = pad(h);
+      minutesEl.textContent = pad(m);
+      secondsEl.textContent = pad(s);
+    }
+
+    tick();
+    timer = setInterval(tick, 1000);
+  }
+
+  /* ---------- generazione file .ics ---------- */
+  function formatICSDate(date){
+    var p = function(n){ return String(n).padStart(2, '0'); };
+    return date.getUTCFullYear().toString() +
+           p(date.getUTCMonth() + 1) +
+           p(date.getUTCDate()) + 'T' +
+           p(date.getUTCHours()) +
+           p(date.getUTCMinutes()) +
+           p(date.getUTCSeconds()) + 'Z';
+  }
+
+  function escapeICS(str){
+    return String(str)
+      .replace(/\\/g, '\\\\')
+      .replace(/;/g, '\\;')
+      .replace(/,/g, '\\,')
+      .replace(/\n/g, '\\n');
+  }
+
+  function buildICS(){
+    var start = new Date(CONFIG.eventISODateTime);
+    var end = new Date(start.getTime() + CONFIG.durationHours * 3600000);
+    var location = (CONFIG.location && CONFIG.location.trim() !== '') ? CONFIG.location : 'Da confermare';
+    var summary = CONFIG.name + ' compie ' + CONFIG.age + ' anni · ' + CONFIG.eventType;
+    var description = 'Trent\'anni meritano una serata speciale. Vi aspetto per un apericena esclusivo.';
+
+    var lines = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//Invito Digitale//' + CONFIG.name + '//IT',
+      'CALSCALE:GREGORIAN',
+      'BEGIN:VEVENT',
+      'UID:' + Date.now() + '-invito-' + CONFIG.name.toLowerCase() + '@local',
+      'DTSTAMP:' + formatICSDate(new Date()),
+      'DTSTART:' + formatICSDate(start),
+      'DTEND:' + formatICSDate(end),
+      'SUMMARY:' + escapeICS(summary),
+      'DESCRIPTION:' + escapeICS(description),
+      'LOCATION:' + escapeICS(location),
+      'END:VEVENT',
+      'END:VCALENDAR'
+    ];
+
+    return lines.join('\r\n');
+  }
+
+  function setupAddToCalendar(){
+    var btn = document.getElementById('add-calendar');
+    var hint = document.getElementById('calendar-hint');
+
+    btn.addEventListener('click', function(){
+      try {
+        var icsContent = buildICS();
+        var blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+        var url = URL.createObjectURL(blob);
+
+        var link = document.createElement('a');
+        link.href = url;
+        link.download = 'Invito-' + CONFIG.name + '-' + CONFIG.age + '.ics';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        window.setTimeout(function(){ URL.revokeObjectURL(url); }, 4000);
+
+        hint.textContent = 'Evento pronto: aprilo dai download per salvarlo nel calendario.';
+      } catch (err) {
+        hint.textContent = 'Non è stato possibile generare il file. Riprova.';
+      }
+    });
+  }
+
+  /* ---------- RSVP → Google Form ---------- */
+  function setupRSVP(){
+    var nameInput = document.getElementById('rsvp-name');
+    var yesBtn = document.getElementById('rsvp-yes');
+    var noBtn = document.getElementById('rsvp-no');
+    var hint = document.getElementById('rsvp-hint');
+    var followup = document.getElementById('rsvp-followup');
+    var answered = false;
+
+    function handle(response, selectedBtn){
+      if (answered) return;
+
+      var name = nameInput.value.trim();
+      if (!name) {
+        hint.textContent = 'Scrivi il tuo nome prima di confermare.';
+        nameInput.focus();
+        return;
+      }
+
+      answered = true;
+      yesBtn.disabled = true;
+      noBtn.disabled = true;
+      nameInput.disabled = true;
+      selectedBtn.classList.add('is-selected');
+
+      sendToGoogleForm(name, response);
+
+      if (response === 'Ci sarò') {
+        hint.textContent = 'Presenza confermata, ' + name + '! Che si festeggi.';
+        if (CONFIG.whatsappGroupLink && CONFIG.whatsappGroupLink.trim() !== '') {
+          followup.innerHTML = '<a class="whatsapp-btn" href="' + escapeHtml(CONFIG.whatsappGroupLink) + '" target="_blank" rel="noopener">Entra nel gruppo WhatsApp</a>';
+        } else {
+          followup.innerHTML = '<p class="rsvp-hint">Il link al gruppo WhatsApp arriverà a breve.</p>';
+        }
+      } else {
+        hint.textContent = 'Peccato, ci mancherai! Grazie per averlo fatto sapere.';
+      }
+    }
+
+    yesBtn.addEventListener('click', function(){ handle('Ci sarò', yesBtn); });
+    noBtn.addEventListener('click', function(){ handle('Non ci sarò', noBtn); });
+  }
+
+  function sendToGoogleForm(name, response){
+    // Se il Form non è ancora configurato, non tenta l'invio
+    // (evita errori inutili in console durante i test).
+    if (!CONFIG.googleForm.actionUrl) return;
+
+    var params = new URLSearchParams();
+    params.append(CONFIG.googleForm.entryName, name);
+    params.append(CONFIG.googleForm.entryResponse, response);
+
+    // mode:'no-cors' impedisce di leggere la risposta di Google,
+    // ma è la tecnica standard e affidabile per inviare dati a un
+    // Google Form da una pagina statica, senza backend proprio.
+    fetch(CONFIG.googleForm.actionUrl, {
+      method: 'POST',
+      mode: 'no-cors',
+      body: params
+    }).catch(function(){
+      /* eventuale errore di rete: ignorato volutamente */
+    });
+  }
+
+})();
+</script>
+
+</body>
+</html>
